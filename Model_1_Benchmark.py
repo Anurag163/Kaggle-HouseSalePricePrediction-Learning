@@ -9,10 +9,12 @@ def __():
     import numpy as np
     import pandas as pd
     from sklearn.linear_model import LinearRegression
-    from sklearn.model_selection import train_test_split
-    from sklearn.metrics import mean_squared_error,r2_score
+    from sklearn.model_selection import train_test_split,cross_val_score
+    from sklearn.metrics import mean_squared_error,r2_score,make_scorer
     return (
         LinearRegression,
+        cross_val_score,
+        make_scorer,
         mean_squared_error,
         np,
         pd,
@@ -34,7 +36,6 @@ def __(data_test, data_train):
     print('No. of Columns in original train data is:',data_train.shape[1])
     print('No. of Rows in original test data is :',data_test.shape[0])
     print('No. of Columns in original test data is :',data_test.shape[1])
-
     return
 
 
@@ -117,6 +118,40 @@ def __(Y_Pred_Df):
 @app.cell
 def __():
     #Score in Kaggle- 0.21,765
+    return
+
+
+@app.cell
+def __(
+    X_Train,
+    Y,
+    cross_val_score,
+    make_scorer,
+    mean_squared_error,
+    model,
+    r2_score,
+):
+    # Define the evaluation metrics
+    r2_scorer = make_scorer(r2_score)
+    mse_scorer = make_scorer(mean_squared_error)
+
+    # Perform cross-validation
+    r2_scores = cross_val_score(model, X_Train, Y, cv=5, scoring=r2_scorer)
+    mse_scores = cross_val_score(model, X_Train, Y, cv=5, scoring=mse_scorer)
+    return mse_scorer, mse_scores, r2_scorer, r2_scores
+
+
+@app.cell
+def __(mse_scores, r2_scores):
+    print("Cross-validation R-squared scores:", r2_scores)
+    print("Average R-squared score:", r2_scores.mean())
+    print("Cross-validation MSE scores:", mse_scores)
+    print("Average MSE score:", mse_scores.mean())
+    return
+
+
+@app.cell
+def __():
     return
 
 
